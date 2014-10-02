@@ -95,8 +95,6 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
                 elif message == "!recap":
                         for player in self.players.iterkeys():
-                elif message == "!recap":
-                        for player in self.players.iterkeys():
                         	serv.privmsg("#perudo", player + " a " + str(len(self.players[player])) + " dés.")
 
 		elif message == "!ordre":
@@ -165,8 +163,12 @@ class PeruBot(ircbot.SingleServerIRCBot):
                                 elif ((message == 'faux') or (message == 'menteur')):
                                         self.state = 2
                                 elif ((message == 'exact') or (message == 'dudo')):
+                                        self.state = 3
+                                elif re.match (r'[0-9]+ [0-9]', message):
+                                       	serv.privmsg("#perudo", "Crétin.")
+                        else:
 				if (re.match (r'[1-9][0-9]* [1-6]', message) or (message == ('exact' or 'dudo' or 'faux' or 'menteur'))):
-                                	serv.privmsg("#perudo", author + " : ce n'est pas ton tour, mais celui de " + str(self.order[self.curr]) + " !")
+                               		serv.privmsg("#perudo", author + " : ce n'est pas ton tour, mais celui de " + str(self.order[self.curr]) + " !")
 
 			
 		if self.state == 2:
@@ -174,7 +176,6 @@ class PeruBot(ircbot.SingleServerIRCBot):
                                 somme = self.verif_p(serv, self.players)
                         else:
 				somme = self.verif(serv, self.players)
-			self.pal = False
 			if (self.nb <= somme):
 				serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était correcte ! " + author + " perd un dé !")
 			else:
@@ -196,7 +197,6 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				if len(tmp) == 2:
 					serv.privmsg("#perudo", "PALIFICO !")
 					self.state = 4
-					self.pal = True
 				else:
 					self.state = 1
 				self.melange(serv, self.players)
@@ -209,7 +209,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				somme = self.verif_p(serv, self.players)
                         else:
 				somme = self.verif(serv, self.players)
-			self.pal = False
+			tmp = self.players[self.order[self.curr]]
                         if (self.nb == somme):
 				if (len(self.players) > 2):
                                 	serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était exacte ! " + author + " gagne un dé !")
@@ -222,9 +222,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 	
                         else:
 				serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était inexacte ! " + author + " perd un dé !")
-
-	                tmp = self.players[self.order[self.curr]]
-               	        self.players[self.order[self.curr]] = tmp[1:]
+               	        	self.players[self.order[self.curr]] = tmp[1:]
                		if len(tmp) == 1:
                                 serv.privmsg("#perudo", self.order[self.curr] + " est éliminé !")
 				name = self.order[self.curr]
@@ -238,7 +236,6 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				if len(tmp) == 2:
       		                	serv.privmsg("#perudo", "PALIFICO !")
                               		self.state = 4	
-					self.pal = True
 	                        else:
                	              		self.state = 1
 				self.melange(serv, self.players)
