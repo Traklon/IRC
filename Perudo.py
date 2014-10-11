@@ -109,12 +109,15 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				self.players[author] = [1,1,1,1,1]
 				self.order.append(author)
 			if ((message == "!play") and (author in self.players)):
-				serv.privmsg("#perudo", "La partie débute !")
-				serv.privmsg("#perudo", "Tapez !regles pour connaître les règles en vigueur.")
-				serv.privmsg("#perudo", "Tapez !comm pour connaîtres les commandes (normalement assez intuitives).")
-				serv.privmsg("#perudo", "L'ordre de jeu est : "+ ", ".join(self.order))
-				self.state = 1
-				self.melange(serv, self.players)
+				if (len(self.players) == 1):
+					serv.privmsg("#perudo", "Jouer seul, c'est pas super intéressant...")
+				else:
+					serv.privmsg("#perudo", "La partie débute !")
+					serv.privmsg("#perudo", "Tapez !regles pour connaître les règles en vigueur.")
+					serv.privmsg("#perudo", "Tapez !comm pour connaîtres les commandes (normalement assez intuitives).")
+					serv.privmsg("#perudo", "L'ordre de jeu est : "+ ", ".join(self.order))
+					self.state = 1
+					self.melange(serv, self.players)
 					
 		elif self.state == 1:
 			self.pal = False
@@ -218,8 +221,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
 					
 				else:
         	                        self.curr = (self.curr+len(self.players)-1)%(len(self.players))
+					tmp = self.players[self.order[self.curr]]
 	                                serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était exacte ! " + self.order[self.curr] + " perd un dé !")
-	
+					self.players[self.order[self.curr]] = tmp[1:]			
                         else:
 				serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était inexacte ! " + author + " perd un dé !")
                	        	self.players[self.order[self.curr]] = tmp[1:]
