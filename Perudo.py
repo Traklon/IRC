@@ -27,7 +27,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		author = irclib.nm_to_n(ev.source())
 		if self.state == 0:
 			serv.privmsg("#perudo", "Bienvenue " + author + " ! Tape !join pour rejoindre ! Rappel : tapez !play pour lancer la partie !")
-			
+
 	def melange(self,serv, players):
 		for player in self.players.iterkeys():
 			d = self.players[player]
@@ -35,7 +35,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				d[i] = random.randint(1,6)
 			self.players[player] = d
 			serv.notice(player, "Tes dés sont : "+ ", ".join(map(str,d)))
-	
+
 	def verif(self, serv, players):
 		somme = 0
 		for player in self.players.iterkeys():
@@ -64,9 +64,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		self.order = []
 		self.curr = 0
 		self.nb = 0
-		self.val = 0			
+		self.val = 0
 		self.pal = False
-			
+
 	def on_pubmsg(self, serv, ev):
 		author = irclib.nm_to_n(ev.source())
 		chan = ev.target()
@@ -88,7 +88,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 			for player in self.players.iterkeys():
                                 somme += len(self.players[player])
 			serv.privmsg("#perudo", "Il y a " + str(somme) + " dés en jeu.")
-		
+
 		elif message == "!quit":
                         serv.privmsg("#perudo", "Partie annulée !")
 			self.reset()
@@ -118,7 +118,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 					serv.privmsg("#perudo", "L'ordre de jeu est : "+ ", ".join(self.order))
 					self.state = 1
 					self.melange(serv, self.players)
-					
+
 		elif self.state == 1:
 			self.pal = False
 			if author == self.order[self.curr] :
@@ -132,9 +132,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
 						serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
 					else:
 						serv.privmsg("#perudo", "Enchère erronée !")
-				elif ((message == 'faux') or (message == 'menteur')):
+				elif (((message == 'faux') or (message == 'menteur')) and tmp_val > 0):
 					self.state = 2
-				elif ((message == 'exact') or (message == 'dudo')):
+				elif (((message == 'exact') or (message == 'dudo')) and tmp_val > 0):
 					self.state = 3
 				elif re.match (r'[0-9]+ [0-9]', message):
 					serv.privmsg("#perudo", "Crétin.")
@@ -162,10 +162,10 @@ class PeruBot(ircbot.SingleServerIRCBot):
 						serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
 					else:
 						serv.privmsg("#perudo", "Enchère erronée ! Relisez !regles si besoin !")
-						
-                                elif ((message == 'faux') or (message == 'menteur')):
+
+                                elif (((message == 'faux') or (message == 'menteur')) and tmp_val > 0):
                                         self.state = 2
-                                elif ((message == 'exact') or (message == 'dudo')):
+                                elif (((message == 'exact') or (message == 'dudo')) and tmp_val > 0):
                                         self.state = 3
                                 elif re.match (r'[0-9]+ [0-9]', message):
                                        	serv.privmsg("#perudo", "Crétin.")
@@ -173,7 +173,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				if (re.match (r'[1-9][0-9]* [1-6]', message) or (message == ('exact' or 'dudo' or 'faux' or 'menteur'))):
                                		serv.privmsg("#perudo", author + " : ce n'est pas ton tour, mais celui de " + str(self.order[self.curr]) + " !")
 
-			
+
 		if self.state == 2:
                         if self.pal:
                                 somme = self.verif_p(serv, self.players)
@@ -192,6 +192,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				name = self.order[self.curr]
 				self.order.remove(name)
 				self.players.pop(name, None)
+                                self.curr = (self.curr)%(len(self.players))
 				if len(self.players) == 1:
 					serv.privmsg("#perudo", self.order[0] + " a gagné ! Félicitations !")
 					self.reset()
@@ -205,7 +206,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				self.melange(serv, self.players)
 				self.nb = 0
 				self.val = 0
-			
+
 
                 if self.state == 3:
 			if self.pal:
@@ -213,21 +214,22 @@ class PeruBot(ircbot.SingleServerIRCBot):
                         else:
 				somme = self.verif(serv, self.players)
 			tmp = self.players[self.order[self.curr]]
+                        l_tmp = len(tmp)
                         if (self.nb == somme):
 				if (len(self.players) > 2):
                                 	serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était exacte ! " + author + " gagne un dé !")
 					if len(self.players[author]) < 5:
 						(self.players[author]).append(1)
-					
+
 				else:
         	                        self.curr = (self.curr+len(self.players)-1)%(len(self.players))
 					tmp = self.players[self.order[self.curr]]
 	                                serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était exacte ! " + self.order[self.curr] + " perd un dé !")
-					self.players[self.order[self.curr]] = tmp[1:]			
+					self.players[self.order[self.curr]] = tmp[1:]
                         else:
 				serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était inexacte ! " + author + " perd un dé !")
                	        	self.players[self.order[self.curr]] = tmp[1:]
-               		if len(tmp) == 1:
+               		if l_tmp == 1:
                                 serv.privmsg("#perudo", self.order[self.curr] + " est éliminé !")
 				name = self.order[self.curr]
        		                self.order.remove(name)
@@ -239,13 +241,13 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
 				if len(tmp) == 2:
       		                	serv.privmsg("#perudo", "PALIFICO !")
-                              		self.state = 4	
+                              		self.state = 4
 	                        else:
                	              		self.state = 1
 				self.melange(serv, self.players)
 				self.nb = 0
-				self.val = 0		
-        
+				self.val = 0
+
 
 if __name__ == "__main__":
     	PeruBot().start()
