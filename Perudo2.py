@@ -17,7 +17,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 	palifico = False
 
 	def __init__(self):
-		ircbot.SingleServerIRCBot.__init__(self, [("irc.rezel.net", 6667)],
+		ircbot.SingleServerIRCBot.__init__(self, [("irc.rezel.org", 6667)],
                                            "PerudoBot", "Bot pour jouer au Perudo écrit par traklon en Python à l'aide du module ircbot.")
 
 	def on_welcome(self, serv, ev):
@@ -89,10 +89,15 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		self.val = 0
 		self.pal = False
 
-        def nouv_tirage(self):
-            self.state = 'ENCHERES'
-            self.nb = 0
-            self.val = 0
+        def nouv_tirage(self, serv):
+             self.verif_elimination(serv)
+             if (not self.verif_gg(serv)):
+                serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
+                self.verif_1de(serv)
+                self.state = 'ENCHERES'
+                self.nb = 0
+                self.val = 0
+                self.melange(serv)
 
 	def on_pubmsg(self, serv, ev):
 		author = irclib.nm_to_n(ev.source())
@@ -144,31 +149,27 @@ class PeruBot(ircbot.SingleServerIRCBot):
 					serv.privmsg("#perudo", "Tapez !comm pour connaîtres les commandes (normalement assez intuitives).")
 					serv.privmsg("#perudo", "L'ordre de jeu est : "+ ", ".join(self.order))
 					self.state = 'ENCHERES'
-					self.melange(serv, self.players)
+					self.melange(serv)
 
 		elif self.state == 'ENCHERES':
 			if author == self.order[self.curr] :
 				if re.match (r'^[1-9][0-9]* [1-6]$', message):
 					tmp_nb = int(message[:-2])
 					tmp_val = int(message[-1])
-                                        if (self.val == 0):
+                                        if self.palifico :
+                                            verif = (tmp_val == self.val) and (tmp_nb > self.nb)
+                                        else:
+                                            verif = (((self.val == 1) and (((tmp_val > 1) and (tmp_nb > 2*self.nb)) or ((tmp_val == 1) and (tmp_nb > self.nb)))) or ((self.val > 1) and (((tmp_val == 1) and (tmp_nb*2 >= self.nb)) or ((tmp_val > 1) and (tmp_nb > self.nb)))))
+                                        if (verif or (self.val == 0)):
                                             self.nb = tmp_nb
                                             self.val = tmp_val
+                                	    self.curr = (self.curr+1)%(len(self.players))
+					    serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
                                         else:
-                                            if self.palifico :
-                                                verif = (tmp_val == self.val) and (tmp_nb > self.nb)
-                                            else:
-                                                verif = (((self.val == 1) and (((tmp_val > 1) and (tmp_nb > 2*self.nb)) or ((tmp_val == 1) and (tmp_nb > self.nb)))) or ((self.val > 1) and (((tmp_val == 1) and (tmp_nb*2 >= self.nb)) or ((tmp_val > 1) and (tmp_nb > self.nb)))))
-                                            if verif:
-                                                self.nb = tmp_nb
-                                                self.val = tmp_val
-	        				self.curr = (self.curr+1)%(len(self.players))
-					        serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
-                                            else:
-                                                serv.privmsg("#perudo", "Enchère erronée !")
-				elif (((message == 'faux') or (message == 'menteur')) and tmp_val > 0):
+                                            serv.privmsg("#perudo", "Enchère erronée !")
+				elif (((message == 'faux') or (message == 'menteur')) and self.val > 0):
 					self.state = 'FAUX'
-				elif (((message == 'exact') or (message == 'dudo')) and tmp_val > 0):
+				elif (((message == 'exact') or (message == 'dudo')) and self.val > 0):
 					self.state = 'EXACT'
 				elif re.match (r'[0-9]+ [0-9]', message):
 					serv.privmsg("#perudo", "Crétin.")
@@ -179,7 +180,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
 		if self.state == 'FAUX':
                     if self.palifico:
-                            somme = self.verif_palifico(serv)
+                        somme = self.verif_palifico(serv)
                     else:
                 	somme = self.verif(serv)
 
@@ -189,13 +190,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		        self.curr = (self.curr+len(self.players)-1)%(len(self.players))
 			serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était fausse ! " + self.order[self.curr] + " perd un dé !")
 
-		    self.players[self.order[self.curr]] = tmp[1:]
+		    self.players[self.order[self.curr]] = self.players[self.order[self.curr]][1:]
 
-                    self.verif_elimination(serv)
-                    if (not self.verif_gg(serv)):
-        	        serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
-                        self.verif_1de(serv)
-		        self.nouv_tirage(serv)
+		    self.nouv_tirage(serv)
 
 
                 if self.state == 'EXACT':
@@ -218,11 +215,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 				serv.privmsg("#perudo", "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était inexacte ! " + author + " perd un dé !")
                	        	self.players[self.order[self.curr]] = self.players[self.order[self.curr]][1:]
 
-                        self.verif_elimination(serv)
-                        if (not verif_gg(serv)):
-				serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
-				self.verif_1de(serv)
-                                self.nouv_tirage(serv)
+                        self.nouv_tirage(serv)
 
 
 if __name__ == "__main__":
