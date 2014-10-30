@@ -18,7 +18,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
 	def __init__(self):
 		ircbot.SingleServerIRCBot.__init__(self, [("irc.rezel.org", 6667)],
-                                           "PerudoBot", "Bot pour jouer au Perudo écrit par traklon en Python à l'aide du module ircbot.")
+                                           "PeruBot", "Bot pour jouer au Perudo écrit par traklon en Python à l'aide du module ircbot.")
 
 	def on_welcome(self, serv, ev):
 		serv.join("#perudo")
