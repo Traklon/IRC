@@ -81,7 +81,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 	        self.palifico = False
 
 	def reset(self):
-		self.state = 0
+		self.state = 'PRE-JEU'
 		self.players = {}
 		self.order = []
 		self.curr = 0
