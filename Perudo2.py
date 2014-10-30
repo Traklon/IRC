@@ -87,7 +87,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		self.curr = 0
 		self.nb = 0
 		self.val = 0
-		self.pal = False
+		self.palifico = False
 
         def nouv_tirage(self, serv):
              self.verif_elimination(serv)
