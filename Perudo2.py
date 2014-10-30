@@ -25,7 +25,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
 	def on_join(self, serv, ev):
 		author = irclib.nm_to_n(ev.source())
-		if self.state == 0:
+		if self.state == 'PRE-JEU':
 			serv.privmsg("#perudo", "Bienvenue " + author + " ! Tape !join pour rejoindre ! Rappel : tapez !play pour lancer la partie !")
 
 	def melange(self,serv):
