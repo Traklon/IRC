@@ -90,10 +90,10 @@ class PeruBot(ircbot.SingleServerIRCBot):
 		self.palifico = False
 
         def nouv_tirage(self, serv):
+             self.verif_1de(serv)
              self.verif_elimination(serv)
              if (not self.verif_gg(serv)):
                 serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
-                self.verif_1de(serv)
                 self.state = 'ENCHERES'
                 self.nb = 0
                 self.val = 0
