@@ -110,8 +110,8 @@ class PeruBot(ircbot.SingleServerIRCBot):
                                                          "Si vous n'aimez pas ces règles, pingez 'traklon' pour l'insulter.")
 		elif message == "!comm":
 			serv.privmsg("#perudo", "Annoncer une valeur (ex : 4 fois le dé 6) : 4 6. On ne peut pas écrire paco pour les 1.")
-			serv.privmsg("#perudo", "Annoncer 'exact' : exact OU dudo.")
-			serv.privmsg("#perudo", "Confondre un menteur : menteur OU faux")
+			serv.privmsg("#perudo", "Annoncer 'exact' : exact OU calza.")
+			serv.privmsg("#perudo", "Confondre un menteur : menteur OU dudo OU faux")
 			serv.privmsg("#perudo", "Meta-jeu : !nbde pour le nombre total de dés. !ordre pour l'ordre du jeu"+\
 							". !recap pour un récapitulatif du nombre de dés de chacun. !suiv pour avoir le nom du joueur suivant."+\
 							" !quit pour annuler la partie.")
@@ -167,14 +167,14 @@ class PeruBot(ircbot.SingleServerIRCBot):
 					    serv.privmsg("#perudo", "C'est au tour de " + self.order[self.curr] + " !")
                                         else:
                                             serv.privmsg("#perudo", "Enchère erronée !")
-				elif (((message == 'faux') or (message == 'menteur')) and self.val > 0):
+				elif (((message == 'faux') or (message == 'menteur') or (message == 'dudo')) and self.val > 0):
 					self.state = 'FAUX'
-				elif (((message == 'exact') or (message == 'dudo')) and self.val > 0):
+				elif (((message == 'exact') or (message == 'calza')) and self.val > 0):
 					self.state = 'EXACT'
 				elif re.match (r'[0-9]+ [0-9]', message):
 					serv.privmsg("#perudo", "Crétin.")
 			else:
-				if (re.match (r'[1-9][0-9]* [1-6]', message) or (message == ('exact' or 'dudo' or 'faux' or 'menteur'))):
+				if (re.match (r'[1-9][0-9]* [1-6]', message) or (message == 'exact') or (message == 'menteur') or (message == 'dudo') or (message == 'faux') or (message == 'calza')):
 					serv.privmsg("#perudo", author + " : ce n'est pas ton tour, mais celui de " + str(self.order[self.curr]) + " !")
 
 
