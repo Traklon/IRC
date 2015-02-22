@@ -6,6 +6,7 @@ import ircbot
 import random
 import re
 import sys
+import yaml
 
 class PeruBot(ircbot.SingleServerIRCBot):
 
@@ -186,14 +187,14 @@ class PeruBot(ircbot.SingleServerIRCBot):
             else:
                 somme = self.verif(serv)
 
-             if (self.nb <= somme):
-                 serv.privmsg(self.chan, "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était correcte ! " + author + " perd un dé !")
-             else:
-                 self.curr = (self.curr+len(self.players)-1)%(len(self.players))
-                 serv.privmsg(self.chan, "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était fausse ! " + self.order[self.curr] + " perd un dé !")
-             self.players[self.order[self.curr]] = self.players[self.order[self.curr]][1:]
+            if (self.nb <= somme):
+                serv.privmsg(self.chan, "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était correcte ! " + author + " perd un dé !")
+            else:
+                self.curr = (self.curr+len(self.players)-1)%(len(self.players))
+                serv.privmsg(self.chan, "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était fausse ! " + self.order[self.curr] + " perd un dé !")
+            self.players[self.order[self.curr]] = self.players[self.order[self.curr]][1:]
 
-             self.nouv_tirage(serv)
+            self.nouv_tirage(serv)
 
 
         if self.state == 'EXACT':
