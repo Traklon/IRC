@@ -45,21 +45,10 @@ class PeruBot(ircbot.SingleServerIRCBot):
         for player in self.players.iterkeys():
             tmp_nb = 0
             for e in self.players[player]:
-                if ((e == self.val) or (e == 1)):
+                if ((e == self.val) or ((e == 1) and (not palifico))):
                     tmp_nb = tmp_nb+1
             somme += tmp_nb
             serv.privmsg(self.chan, player + " révèle " + str(tmp_nb) + " " + str(self.val) + " !")
-        return somme
-
-    def verif_palifico(self, serv):
-        somme = 0
-        for player in self.players.iterkeys():
-            tmp_nb = 0
-            for e in self.players[player]:
-                if (e == self.val):
-                    tmp_nb = tmp_nb+1
-                    somme += tmp_nb
-                    serv.privmsg(self.chan, player + " révèle " + str(tmp_nb) + " " + str(self.val) + " !")
         return somme
 
     def verif_elimination(self, serv):
@@ -182,10 +171,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
 
         if self.state == 'FAUX':
-            if self.palifico:
-                somme = self.verif_palifico(serv)
-            else:
-                somme = self.verif(serv)
+            somme = self.verif(serv)
 
             if (self.nb <= somme):
                 serv.privmsg(self.chan, "Avec " + str(somme) + " " + str(self.val) + ", l'enchère était correcte ! " + author + " perd un dé !")
@@ -198,10 +184,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
 
         if self.state == 'EXACT':
-            if self.palifico:
-                somme = self.verif_palifico(serv)
-            else:
-                somme = self.verif(serv)
+            somme = self.verif(serv)
 
             if (self.nb == somme):
                 if (len(self.players) > 2):
