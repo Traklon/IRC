@@ -45,7 +45,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
         for player in self.players.iterkeys():
             tmp_nb = 0
             for e in self.players[player]:
-                if ((e == self.val) or ((e == 1) and (not palifico))):
+                if ((e == self.val) or ((e == 1) and (not self.palifico))):
                     tmp_nb = tmp_nb+1
             somme += tmp_nb
             serv.privmsg(self.chan, player + " révèle " + str(tmp_nb) + " " + str(self.val) + " !")
