@@ -6,7 +6,6 @@ import ircbot
 import random
 import re
 import sys
-import yaml
 
 class PeruBot(ircbot.SingleServerIRCBot):
 
