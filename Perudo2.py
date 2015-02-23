@@ -162,10 +162,10 @@ class PeruBot(ircbot.SingleServerIRCBot):
                     self.state = 'FAUX'
                 elif (((message == 'exact') or (message == 'calza')) and self.val > 0):
                     self.state = 'EXACT'
-                elif re.match (r'[0-9]+ [0-9]', message):
+                elif re.match (r'^[0-9]+ [0-9]$', message):
                     serv.privmsg(self.chan, "Crétin.")
             else:
-                if (re.match (r'[1-9][0-9]* [1-6]', message) or (message == 'exact') or (message == 'menteur') or (message == 'dudo') or (message == 'faux') or (message == 'calza')):
+                if (re.match (r'^[1-9][0-9]* [1-6]$', message) or (message == 'exact') or (message == 'menteur') or (message == 'dudo') or (message == 'faux') or (message == 'calza')):
                     serv.privmsg(self.chan, author + " : ce n'est pas ton tour, mais celui de " + str(self.order[self.curr]) + " !")
 
 
