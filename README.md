@@ -3,6 +3,18 @@ PeruBot
 
 Bot qui permet de jouer au Perudo sur IRC.
 
-Nécessite le paquet irclib (sudo apt-get install python-irclib).
+Installation
+-----------
 
-Pour le lancer sans garder de fenêtre ouverte : nohup python Perudo2.py server_name chan_name(without #) &
+Nécessite le paquet irclib :
+    sudo apt-get install python-irclib
+
+Démarrage
+---------
+
+    nohup python Perudo2.py server_name chan_name(without #) &
+    
+Règles et Usage
+---------
+
+Le bot répond aux commandes !regles et !comm.
