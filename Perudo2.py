@@ -20,8 +20,13 @@ class PeruBot(ircbot.SingleServerIRCBot):
     val = 0
     palifico = False
 
+    if (len(sys.argv) == 3):
+        port = 6667
+    else:
+        port = sys.argv[3]
+
     def __init__(self):
-        ircbot.SingleServerIRCBot.__init__(self, [(self.server, 6667)],
+        ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)],
                                            "PeruBot", "Bot pour jouer au Perudo écrit par traklon en Python à l'aide du module ircbot.")
 
     def on_welcome(self, serv, ev):
