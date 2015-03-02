@@ -80,14 +80,13 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
     def verif_join(self, serv):
         for e in self.join:
-            if (not (e in self.players)):
-                serv.privmsg(self.chan, e + " a rejoint la partie !")
-                mini = 5
-                for player in (self.players.iterkeys()):
-                    if (len(players[player] < mini)):
-                        mini = len(players[player])
-                self.players[e] = [1,1,1,1,1][:mini]
-                self.order.append(e)
+            serv.privmsg(self.chan, e + " a rejoint la partie !")
+            mini = 5
+            for player in (self.players.iterkeys()):
+                if (len(players[player] < mini)):
+                    mini = len(players[player])
+            self.players[e] = [1,1,1,1,1][:mini]
+            self.order.append(e)
         self.join = []
 
     def reset(self):
@@ -163,8 +162,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
                     self.melange(serv)
 
         elif message == "!join":
-            serv.privmsg(self.chan, author + " rejoindra la partie à la fin du tour !")
-            self.join.append(author)
+            if (not (author in self.players)):
+                serv.privmsg(self.chan, author + " rejoindra la partie à la fin du tour !")
+                self.join.append(author)
 
         elif self.state == 'ENCHERES':
             if author == self.order[self.curr] :
