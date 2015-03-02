@@ -13,7 +13,7 @@ Nécessite le paquet irclib :
 Démarrage
 ---------
 
-    nohup python Perudo2.py server_name chan_name(without #) &
+    nohup python Perudo2.py server_name chan_name(without #) [port_number (default = 6667)] &
     
 Règles et Usage
 ---------

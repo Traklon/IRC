@@ -18,6 +18,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
     nb = 0
     val = 0
     palifico = False
+    join = []
 
     if (len(sys.argv) == 3):
         port = 6667
@@ -26,7 +27,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
 
     def __init__(self):
         ircbot.SingleServerIRCBot.__init__(self, [(self.server, self.port)],
-                                           "PeruBot", "Bot pour jouer au Perudo écrit par traklon en Python à l'aide du module ircbot.")
+                                           "PeruBot", "https://github.com/Traklon/IRC")
 
     def on_welcome(self, serv, ev):
         serv.join(self.chan)
@@ -77,6 +78,18 @@ class PeruBot(ircbot.SingleServerIRCBot):
         else:
             self.palifico = False
 
+    def verif_join(self, serv):
+        for e in self.join:
+            if (not (e in self.players)):
+                serv.privmsg(self.chan, e + " a rejoint la partie !")
+                mini = 5
+                for player in (self.players.iterkeys()):
+                    if (len(players[player] < mini)):
+                        mini = len(players[player])
+                self.players[e] = [1,1,1,1,1][:mini]
+                self.order.append(e)
+        self.join = []
+
     def reset(self):
         self.state = 'PRE-JEU'
         self.players = {}
@@ -85,9 +98,11 @@ class PeruBot(ircbot.SingleServerIRCBot):
         self.nb = 0
         self.val = 0
         self.palifico = False
+        self.join = [] 
 
     def nouv_tirage(self, serv):
          self.verif_1de(serv)
+         self.verif_join(serv)
          self.verif_elimination(serv)
          if (not self.verif_gg(serv)):
             serv.privmsg(self.chan, "C'est au tour de " + self.order[self.curr] + " !")
@@ -146,6 +161,10 @@ class PeruBot(ircbot.SingleServerIRCBot):
                     serv.privmsg(self.chan, "L'ordre de jeu est : "+ ", ".join(self.order))
                     self.state = 'ENCHERES'
                     self.melange(serv)
+
+        elif message == "!join":
+            serv.privmsg(self.chan, author + " rejoindra la partie à la fin du tour !")
+            self.join.append(author)
 
         elif self.state == 'ENCHERES':
             if author == self.order[self.curr] :
