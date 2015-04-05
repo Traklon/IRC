@@ -19,6 +19,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
     val = 0
     palifico = False
     join = []
+    nojoin = False
 
     if (len(sys.argv) == 3):
         port = 6667
@@ -63,6 +64,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
             self.order.remove(name)
             self.players.pop(name, None)
             self.curr = (self.curr)%(len(self.players))
+            self.nojoin = True
 
     def verif_gg(self, serv):
         if len(self.players) == 1:
@@ -79,15 +81,16 @@ class PeruBot(ircbot.SingleServerIRCBot):
             self.palifico = False
 
     def verif_join(self, serv):
-        for e in self.join:
-            serv.privmsg(self.chan, e + " a rejoint la partie !")
-            mini = 5
-            for player in (self.players.iterkeys()):
-                if (len(players[player] < mini)):
-                    mini = len(players[player])
-            self.players[e] = [1,1,1,1,1][:mini]
-            self.order.append(e)
-        self.join = []
+        if (not self.nojoin):
+            for e in self.join:
+                serv.privmsg(self.chan, e + " a rejoint la partie !")
+                mini = 5
+                for player in (self.players.iterkeys()):
+                    if (len(players[player] < mini)):
+                        mini = len(players[player])
+                self.players[e] = [1,1,1,1,1][:mini]
+                self.order.append(e)
+            self.join = []
 
     def reset(self):
         self.state = 'PRE-JEU'
@@ -98,6 +101,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
         self.val = 0
         self.palifico = False
         self.join = [] 
+        self.nojoin = False
 
     def nouv_tirage(self, serv):
          self.verif_1de(serv)
