@@ -133,7 +133,7 @@ class PeruBot(ircbot.SingleServerIRCBot):
             somme = 0
             for player in self.players.iterkeys():
                 somme += len(self.players[player])
-                serv.privmsg(self.chan, "Il y a " + str(somme) + " dés en jeu.")
+            serv.privmsg(self.chan, "Il y a " + str(somme) + " dés en jeu.")
 
         elif message == "!quit":
             serv.privmsg(self.chan, "Partie annulée !")
