@@ -179,7 +179,9 @@ class PeruBot(ircbot.SingleServerIRCBot):
                         verif = (tmp_val == self.val) and (tmp_nb > self.nb)
                     else:
                         verif = (((self.val == 1) and (((tmp_val > 1) and (tmp_nb > 2*self.nb)) or ((tmp_val == 1) and (tmp_nb > self.nb)))) or ((self.val > 1) and (((tmp_val == 1) and (tmp_nb*2 >= self.nb)) or ((tmp_val > 1) and (tmp_nb > self.nb)))))
-                    if (verif or (self.val == 0)):
+                    if self.val == 0:
+                        verif = self.palifico or tmp_val != 1
+                    if verif:
                          self.nb = tmp_nb
                          self.val = tmp_val
                          self.curr = (self.curr+1)%(len(self.players))
