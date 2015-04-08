@@ -8,7 +8,7 @@ Installation
 
 Nécessite le paquet irclib :
 
-    sudo apt-get install python-irclib
+    sudo pip install python-irclib
 
 Démarrage
 ---------
